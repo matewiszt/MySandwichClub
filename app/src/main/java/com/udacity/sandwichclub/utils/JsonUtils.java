@@ -10,6 +10,14 @@ import java.util.ArrayList;
 
 public class JsonUtils {
 
+    private static final String JSON_KEY_NAME = "name";
+    private static final String JSON_KEY_MAIN_NAME = "mainName";
+    private static final String JSON_KEY_ALSO_KNOWN = "alsoKnownAs";
+    private static final String JSON_KEY_ORIGIN = "placeOfOrigin";
+    private static final String JSON_KEY_DESCRIPTION = "description";
+    private static final String JSON_KEY_IMAGE = "image";
+    private static final String JSON_KEY_INGREDIENTS = "ingredients";
+
     public static Sandwich parseSandwichJson(String json) {
 
         //If the JSON String is empty, return null
@@ -20,26 +28,49 @@ public class JsonUtils {
         try {
             //Create a JSONObject from the JSON String
             JSONObject jsonObject = new JSONObject(json);
+            JSONObject names;
+            String mainName = null;
+            ArrayList<String> alsoKnownAs = null;
+            String placeOfOrigin = null;
+            String description = null;
+            String image = null;
+            ArrayList<String> ingredients = null;
 
             //Get the names
-            JSONObject names = jsonObject.getJSONObject("name");
-            String mainName = names.getString("mainName");
-            JSONArray alsoKnownAsJson = names.getJSONArray("alsoKnownAs");
-            ArrayList<String> alsoKnownAs = new ArrayList<>();
-            for (int i = 0; i < alsoKnownAsJson.length(); i++){
-                alsoKnownAs.add(alsoKnownAsJson.getString(i));
+            if (jsonObject.has(JSON_KEY_NAME)){
+                names = jsonObject.getJSONObject(JSON_KEY_NAME);
+                if (names.has(JSON_KEY_MAIN_NAME)){
+                    mainName = names.getString(JSON_KEY_MAIN_NAME);
+                }
+                if (names.has(JSON_KEY_ALSO_KNOWN)){
+                    JSONArray alsoKnownAsJson = names.getJSONArray(JSON_KEY_ALSO_KNOWN);
+                    alsoKnownAs = new ArrayList<>();
+                    for (int i = 0; i < alsoKnownAsJson.length(); i++){
+                        alsoKnownAs.add(alsoKnownAsJson.getString(i));
+                    }
+                }
             }
 
             //Get the place of origin, the description and the image path
-            String placeOfOrigin = jsonObject.getString("placeOfOrigin");
-            String description = jsonObject.getString("description");
-            String image = jsonObject.getString("image");
+            if (jsonObject.has(JSON_KEY_ORIGIN)){
+                placeOfOrigin = jsonObject.getString(JSON_KEY_ORIGIN);
+            }
+
+            if (jsonObject.has(JSON_KEY_DESCRIPTION)){
+                description = jsonObject.getString(JSON_KEY_DESCRIPTION);
+            }
+
+            if(jsonObject.has(JSON_KEY_IMAGE)){
+                image = jsonObject.getString(JSON_KEY_IMAGE);
+            }
 
             //Get the ingredients
-            JSONArray ingredientsJson = jsonObject.getJSONArray("ingredients");
-            ArrayList<String> ingredients = new ArrayList<>();
-            for (int i = 0; i < ingredientsJson.length(); i++){
-                ingredients.add(ingredientsJson.getString(i));
+            if (jsonObject.has(JSON_KEY_INGREDIENTS)){
+                JSONArray ingredientsJson = jsonObject.getJSONArray(JSON_KEY_INGREDIENTS);
+                ingredients = new ArrayList<>();
+                for (int i = 0; i < ingredientsJson.length(); i++){
+                    ingredients.add(ingredientsJson.getString(i));
+                }
             }
 
             //Create a new Sandwich object from the data and return it
